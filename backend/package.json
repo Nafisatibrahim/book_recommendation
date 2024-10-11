@@ -1,0 +1,26 @@
+{
+  "name": "book_recommendation",
+  "version": "1.0.0",
+  "description": "Recommend books to user based on their response to specific questions (favorite genres, favorite authors, current mood,...)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nafisatibrahim/book_recommendation.git"
+  },
+  "keywords": [
+    "book"
+  ],
+  "author": "Nafisat Ibrahim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nafisatibrahim/book_recommendation/issues"
+  },
+  "homepage": "https://github.com/Nafisatibrahim/book_recommendation#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1"
+  }
+}
