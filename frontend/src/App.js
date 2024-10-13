@@ -1,110 +1,254 @@
 // Import React libraries
-// useEffect used to perform side effects (like fetching data) and useState used to manage state in a functional component
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
+import './App.css'; // Importing the App.css for styling
+import bookImage from './images/books.jpg'; // Make sure this path is correct
 
 // Define the app component
 function App() {
-    // Declare a state variale 'searchQuery' to store the user's input and a function 'setSearchQuery' to update it
-    const [searchQuery, setSearchQuery] = useState('');
-    // Declare a state variale 'sbooks' to store the user's input and a function 'setBooks' to update it
-    const [books, setBooks] = useState([]); // State to store the fetched books
+  // Declare state variables
+  const [searchQuery, setSearchQuery] = useState(''); // To store the user's search input
+  const [books, setBooks] = useState([]); // To store the fetched book results
+  const [bookOfTheDay, setBookOfTheDay] = useState(null); // To store the book of the day data
+  const [categories] = useState(['Fiction', 'Non-fiction', 'Romance', 'Adventure', 'Horror']); // Predefined categories
+  const [popularBooks, setPopularBooks] = useState([]); // To store random popular books
+  const [loading, setLoading] = useState(false); // To manage loading state
+  const [noResults, setNoResults] = useState(false); // To manage no results state
+  const [searched, setSearched] = useState(false); // New state to track when the search button is clicked
 
-    // Creat a function to handle form submission
-    const handleSubmit = (e) => {
-      e.preventDefault(); // Precents the page from reloading when the form is submitted
+  // Fetch random books for popular books and book of the day on component mount
+  useEffect(() => {
+    fetchRandomBooks();
+  }, []);
 
-      // Make a request to the backend APT (Express server) with the use's search query
-      fetch(`http://localhost:5005/books?query=${searchQuery}`)
-      // Convert the response to Json
-        .then((response) => response.json())
-        // Once the data is received, update the state variable 'books' with the fetched data
-        .then((data) => {
-          setBooks(data.items || []); // If the books are found, update the 'books' state with the data from the backend
-        })
-        .catch((error) => {
-          console.error('Error fetching data:', error); // Log an error if the data cannot be fetched
-        });
+  const fetchRandomBooks = () => {
+    // Fetch a random book for 'Book of the Day' and other popular books
+    fetch(`http://localhost:5005/books?query=romance`)
+      .then((response) => response.json())
+      .then((data) => {
+        const randomIndex = Math.floor(Math.random() * data.items.length); // Pick a random index
+        setBookOfTheDay(data.items[randomIndex]); // First book is the book of the day
+        setPopularBooks(data.items.slice(1, 6)); // Select 5 books for 'Popular Books'
+      })
+      .catch((error) => console.error('Error fetching random books:', error));
   };
 
-  // Function to hangle thumbs up feedback
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent the page from reloading
+    setLoading(true); // Show loading
+    setNoResults(false); // Reset no results
+    setSearched(true); // Mark that a search has been initiated
+
+    // Fetch books based on user's search query
+    fetch(`http://localhost:5005/books?query=${searchQuery}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setBooks(data.items || []); // Update books state with search results
+        setLoading(false); // Stop loading
+        if (!data.items || data.items.length === 0) {
+          setNoResults(true); // Show 'no results' message if no books are found
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching search results:', error);
+        setLoading(false);
+      });
+  };
+
+  // Handle thumbs up feedback
   const handleThumbsUp = (bookId) => {
-    fetch(`http://localhost:5005/feedback`, { // Make a request to the backend API
-      method: 'POST', // Send a POST request to the backend
-      headers: { 'Content-Type': 'application/json'}, // Set the content type of the request
-      body: JSON.stringify({ bookId: bookId, feedback: 'thumbs_up'})
+    fetch(`http://localhost:5005/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookId: bookId, feedback: 'thumbs_up' }),
     })
-    .then(() => {
-      console.log(`Thumbs up sent for book ID: ${bookId}`); // Log a message if the feedback is sent successfully
-    })
-    .catch((error) => {
-      console.error('Error sending feedback:', error); 
-    });
+      .then(() => console.log(`Thumbs up sent for book ID: ${bookId}`))
+      .catch((error) => console.error('Error sending feedback:', error));
   };
 
-  // Function to hangle thumbs up feedback
+  // Handle thumbs down feedback
   const handleThumbsDown = (bookId) => {
-    fetch(`http://localhost:5005/feedback`, { // Make a request to the backend API
-      method: 'POST', // Send a POST request to the backend
-      headers: { 'Content-Type': 'application/json'}, // Set the content type of the request
-      body: JSON.stringify({ bookId: bookId, feedback: 'thumbs_down'})
+    fetch(`http://localhost:5005/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookId: bookId, feedback: 'thumbs_down' }),
     })
-    .then(() => {
-      console.log(`Thumbs up sent for book ID: ${bookId}`); // Log a message if the feedback is sent successfully
-    })
-    .catch((error) => {
-      console.error('Error sending feedback:', error); 
-    });
+      .then(() => console.log(`Thumbs down sent for book ID: ${bookId}`))
+      .catch((error) => console.error('Error sending feedback:', error));
   };
 
+  // Fetch books based on selected category
+  const handleCategoryClick = (category) => {
+    setLoading(true);
+    setNoResults(false);
+    setSearched(true);
 
-  // Render the component's UI
+    // Fetch books based on the selected category
+    fetch(`http://localhost:5005/books?query=${category}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setBooks(data.items || []);
+        setLoading(false);
+        if (!data.items || data.items.length === 0) {
+          setNoResults(true);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching category books:', error);
+        setLoading(false);
+      });
+  };
+
   return (
-    <div className = "App">
-      {/* Display a heading */}
-      <h1>Book Search</h1>
+    <div className="App">
+      {/* Header Section with Title and Menu Bar */}
+      <header className="header">
+        <div className="header-left">
+          <h1>Book Recommendation</h1> {/* Main Title */}
+        </div>
+        <div className="header-right">
+          <ul className="menu-bar">
+            <li>Home</li>
+            <li>About</li>
+            <li>Contact</li>
+          </ul>
+        </div>
+      </header>
 
-      {/* Create a form to capture the user's search input */}
-      <form onSubmit = {handleSubmit}> {/* When the form is submitted, call handleSubmit */} 
+      {/* New Banner with Two Images */}
+      <div className="banner">
+        <div className="banner-left">
+          <img src={bookImage} alt="Left Banner Image" />
+        </div>
+        <div className="banner-right">
+          <img src={bookImage} alt="Right Banner Image" />
+        </div>
+      </div>
+
+      {/* Call to Action Section */}
+      <div className="call-to-action">
+        <h2>Discover Your Next Favorite Book!</h2> {/* Enhanced title */}
+        <p>Explore the world of books and find the next one to immerse yourself in.</p>
+      </div>
+
+      {/* Book of the Day */}
+      {bookOfTheDay && (
+        <div className="book-of-the-day">
+          <h2>Book of the Day</h2>
+          <div className="book-details">
+            <a href={bookOfTheDay.volumeInfo.infoLink} target="_blank" rel="noopener noreferrer">
+              <img
+                src={bookOfTheDay.volumeInfo.imageLinks?.thumbnail}
+                alt={bookOfTheDay.volumeInfo.title}
+                className="book-thumbnail"
+              />
+            </a>
+            <div>
+              <h3>{bookOfTheDay.volumeInfo.title}</h3>
+              <p>{bookOfTheDay.volumeInfo.authors?.join(', ') || 'Unknown author'}</p>
+              <p>{bookOfTheDay.volumeInfo.description || 'No description available'}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Search Bar */}
+      <form onSubmit={handleSubmit} className="search-bar">
         <input
-          type="text" // The input field where the user types their search term
-          value={searchQuery} // Bind the value of the input to the 'searchQuery' state
-          onChange={(e) => setSearchQuery(e.target.value)} // Update 'searchQuery' state when the user types
-          placeholder="Search for books by title, author, or genre" // Placeholder text in the input field
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search for books by title, author, or genre"
         />
-        <button type="submit">Search</button> {/* Button to submit the form */}
+        <button type="submit">Search</button>
       </form>
 
-      {/* Check if any books were fetched and display them */}
-      {books.length > 0 && ( //Only show this section if there are books in the 'books' state
-        <div> 
+      {/* Recommended Categories */}
+      <div className="categories">
+        <h2>Recommended Categories</h2>
+        <div className="category-buttons">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className="category-button"
+              onClick={() => handleCategoryClick(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Popular Books Carousel */}
+      {!searched && (
+        <div className="popular-books">
+          <h2>Popular Books</h2>
+          <div className="carousel">
+            {popularBooks.length > 0 ? (
+              popularBooks.map((book) => (
+                <div key={book.id} className="carousel-book">
+                  <a href={book.volumeInfo.infoLink} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={book.volumeInfo.imageLinks?.thumbnail}
+                      alt={book.volumeInfo.title}
+                      className="carousel-book-image"
+                    />
+                  </a>
+                  <h3>{book.volumeInfo.title}</h3>
+                  <p>{book.volumeInfo.authors?.join(', ') || 'Unknown author'}</p>
+                </div>
+              ))
+            ) : (
+              <p>Loading popular books...</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Search Results */}
+      {loading ? (
+        <p>Loading...</p>
+      ) : noResults ? (
+        <p>No results found for your search.</p>
+      ) : books.length > 0 ? (
+        <div className="search-results">
           <h2>Search Results</h2>
           <ul>
-            {/* Map over the books arrray and create a list item for each book */}
             {books.map((book) => (
-              <li key={book.id}> {/* Use 'book.id' as a unique key for each list item */}
-              <h3>{book.volumeInfo.title}</h3> {/* Display the book title */}
-              <p>{book.volumeInfo.authors ? book.volumeInfo.authors.join(',') : 'Unknown author'}</p> {/* Display authors, or 'Unknown author' if not available */}
-              <p>{book.volumeInfo.description ? book.volumeInfo.description : 'No description available'}</p>  {/* Display the book's description, or a fallback message */}
-
-              {/* Thumbs Up/ Down Buttons*/}
-              <button onClick={() => handleThumbsUp(book.id)}>👍 Thumbs Up</button>
-              <button onClick={() => handleThumbsDown(book.id)}>👎 Thumbs Down</button>
+              <li key={book.id}>
+                <div className="book-details">
+                  <a href={book.volumeInfo.infoLink} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={book.volumeInfo.imageLinks?.thumbnail}
+                      alt={book.volumeInfo.title}
+                      className="book-thumbnail"
+                    />
+                  </a>
+                  <div>
+                    <h3>{book.volumeInfo.title}</h3>
+                    <p>{book.volumeInfo.authors?.join(', ') || 'Unknown author'}</p>
+                    <p>{book.volumeInfo.description || 'No description available'}</p>
+                  </div>
+                </div>
+                {/* Thumbs Up/Down Buttons */}
+                <button onClick={() => handleThumbsUp(book.id)}>👍 Like</button>
+                <button onClick={() => handleThumbsDown(book.id)}>👎 Dislike</button>
               </li>
             ))}
           </ul>
         </div>
-      )}
+      ) : null}
+
+      {/* Footer with Credit */}
+      <footer className="footer">
+        <p>Created by Nafisat Ibrahim</p> {/* Your name here */}
+      </footer>
     </div>
   );
 }
 
-// Export the App component so it can be used in other parts of the application
+// Export the App component
 export default App;
-
-
-
-
-
 
 
 /*import logo from './logo.svg';
