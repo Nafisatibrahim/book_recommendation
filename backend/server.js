@@ -4,6 +4,11 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config(); // To manage different environment variables
+
+
+// Set the port number for the server
+const PORT = process.env.PORT || 5000;
+
 // Create an express application
 const app = express();
 
@@ -41,9 +46,6 @@ app.post('/feedback', (req, res) => {
 	// Send a respone back
 	res.send(`Feedback received for book ID: ${bookId}, Feedback: ${feedback}`);
 });
-
-// Set the port number for the server
-const PORT = 5005;
 
 // Define a route for the URL ('/) of the server
 app.get('/',(req, res) => {

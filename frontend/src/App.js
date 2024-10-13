@@ -1,9 +1,11 @@
 // Import React libraries
 import React, { useEffect, useState } from 'react';
 import './App.css'; // Importing the App.css for styling
-import bookImage from './images/books.jpg'; // Make sure this path is correct
+import bookImage from './images/books.jpg';
 
-// Define the app component
+// Define the base URL for the API
+const API_BASE_URL = "https://nafisat-bookrecommendations-b974d0e6c040.herokuapp.com";
+
 function App() {
   // Declare state variables
   const [searchQuery, setSearchQuery] = useState(''); // To store the user's search input
@@ -22,7 +24,7 @@ function App() {
 
   const fetchRandomBooks = () => {
     // Fetch a random book for 'Book of the Day' and other popular books
-    fetch(`http://localhost:5005/books?query=romance`)
+    fetch(`${API_BASE_URL}/books?query=romance`)
       .then((response) => response.json())
       .then((data) => {
         const randomIndex = Math.floor(Math.random() * data.items.length); // Pick a random index
@@ -40,7 +42,7 @@ function App() {
     setSearched(true); // Mark that a search has been initiated
 
     // Fetch books based on user's search query
-    fetch(`http://localhost:5005/books?query=${searchQuery}`)
+    fetch(`${API_BASE_URL}/books?query=${searchQuery}`)
       .then((response) => response.json())
       .then((data) => {
         setBooks(data.items || []); // Update books state with search results
@@ -57,7 +59,7 @@ function App() {
 
   // Handle thumbs up feedback
   const handleThumbsUp = (bookId) => {
-    fetch(`http://localhost:5005/feedback`, {
+    fetch(`${API_BASE_URL}/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookId: bookId, feedback: 'thumbs_up' }),
@@ -68,7 +70,7 @@ function App() {
 
   // Handle thumbs down feedback
   const handleThumbsDown = (bookId) => {
-    fetch(`http://localhost:5005/feedback`, {
+    fetch(`${API_BASE_URL}/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookId: bookId, feedback: 'thumbs_down' }),
@@ -84,7 +86,7 @@ function App() {
     setSearched(true);
 
     // Fetch books based on the selected category
-    fetch(`http://localhost:5005/books?query=${category}`)
+    fetch(`${API_BASE_URL}/books?query=${category}`)
       .then((response) => response.json())
       .then((data) => {
         setBooks(data.items || []);
