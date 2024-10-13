@@ -1,0 +1,13 @@
+{
+    "name": "book_recommendation",
+    "version": "1.0.0",
+    "scripts": {
+      "heroku-postbuild": "npm install --prefix frontend && npm run build --prefix frontend", 
+      "start": "npm install --prefix backend && npm start --prefix backend"
+    },
+    "engines": {
+      "node": "14.x"
+    },
+    "dependencies": {}
+  }
+  
