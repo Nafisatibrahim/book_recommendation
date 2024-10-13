@@ -13,7 +13,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "serve -s build",  
+    "start": "serve -s build",
     "build": "react-scripts build",
     "heroku-postbuild": "npm run build",
     "test": "react-scripts test",
@@ -37,8 +37,8 @@
       "last 1 safari version"
     ]
   },
-  "engines": {
-    "node": "14.x",
-    "npm": "6.x"
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/plugin-transform-private-property-in-object": "^7.25.8"
   }
 }
