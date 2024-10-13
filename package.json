@@ -2,12 +2,14 @@
     "name": "book_recommendation",
     "version": "1.0.0",
     "scripts": {
-      "heroku-postbuild": "npm install --prefix frontend && npm run build --prefix frontend", 
-      "start": "npm install --prefix backend && npm start --prefix backend"
+        "heroku-postbuild": "npm install --prefix frontend && npm run build --prefix frontend",
+        "start": "cd backend && node server.js"
     },
     "engines": {
-      "node": "14.x"
+        "node": ">=14.x <=20.x"
     },
-    "dependencies": {}
-  }
-  
+    "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+        "@babel/plugin-transform-private-property-in-object": "^7.21.11"
+    }
+}
