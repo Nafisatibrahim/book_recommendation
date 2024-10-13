@@ -24,7 +24,7 @@ function App() {
 
   const fetchRandomBooks = () => {
     // Fetch a random book for 'Book of the Day' and other popular books
-    fetch(`${API_BASE_URL}/books?query=romance`)
+    fetch(`${API_BASE_URL}/api/books?query=romance`)
       .then((response) => response.json())
       .then((data) => {
         const randomIndex = Math.floor(Math.random() * data.items.length); // Pick a random index
@@ -42,7 +42,7 @@ function App() {
     setSearched(true); // Mark that a search has been initiated
 
     // Fetch books based on user's search query
-    fetch(`${API_BASE_URL}/books?query=${searchQuery}`)
+    fetch(`${API_BASE_URL}/api/books?query=${searchQuery}`)
       .then((response) => response.json())
       .then((data) => {
         setBooks(data.items || []); // Update books state with search results
@@ -86,7 +86,7 @@ function App() {
     setSearched(true);
 
     // Fetch books based on the selected category
-    fetch(`${API_BASE_URL}/books?query=${category}`)
+    fetch(`${API_BASE_URL}/api/books?query=${category}`)
       .then((response) => response.json())
       .then((data) => {
         setBooks(data.items || []);
