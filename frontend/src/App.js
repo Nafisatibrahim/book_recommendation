@@ -26,6 +26,37 @@ function App() {
         });
   };
 
+  // Function to hangle thumbs up feedback
+  const handleThumbsUp = (bookId) => {
+    fetch(`http://localhost:5005/feedback`, { // Make a request to the backend API
+      method: 'POST', // Send a POST request to the backend
+      headers: { 'Content-Type': 'application/json'}, // Set the content type of the request
+      body: JSON.stringify({ bookId: bookId, feedback: 'thumbs_up'})
+    })
+    .then(() => {
+      console.log(`Thumbs up sent for book ID: ${bookId}`); // Log a message if the feedback is sent successfully
+    })
+    .catch((error) => {
+      console.error('Error sending feedback:', error); 
+    });
+  };
+
+  // Function to hangle thumbs up feedback
+  const handleThumbsDown = (bookId) => {
+    fetch(`http://localhost:5005/feedback`, { // Make a request to the backend API
+      method: 'POST', // Send a POST request to the backend
+      headers: { 'Content-Type': 'application/json'}, // Set the content type of the request
+      body: JSON.stringify({ bookId: bookId, feedback: 'thumbs_down'})
+    })
+    .then(() => {
+      console.log(`Thumbs up sent for book ID: ${bookId}`); // Log a message if the feedback is sent successfully
+    })
+    .catch((error) => {
+      console.error('Error sending feedback:', error); 
+    });
+  };
+
+
   // Render the component's UI
   return (
     <div className = "App">
@@ -54,6 +85,10 @@ function App() {
               <h3>{book.volumeInfo.title}</h3> {/* Display the book title */}
               <p>{book.volumeInfo.authors ? book.volumeInfo.authors.join(',') : 'Unknown author'}</p> {/* Display authors, or 'Unknown author' if not available */}
               <p>{book.volumeInfo.description ? book.volumeInfo.description : 'No description available'}</p>  {/* Display the book's description, or a fallback message */}
+
+              {/* Thumbs Up/ Down Buttons*/}
+              <button onClick={() => handleThumbsUp(book.id)}>👍 Thumbs Up</button>
+              <button onClick={() => handleThumbsDown(book.id)}>👎 Thumbs Down</button>
               </li>
             ))}
           </ul>

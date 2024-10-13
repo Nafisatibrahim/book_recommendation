@@ -10,10 +10,13 @@ const app = express();
 // Allow cors to allow requests from all origin
 app.use(cors());
 
+// Add middleware to parse the request body as JSON
+app.use(express.json());
+
 // Define Google Books API key
 const API_KEY = process.env.BOOKS_API_KEY || 'AIzaSyDm74oNqKRuQZuwFZ0ctpi9cI5QLTZL8sw';
 
-// Example route to fetch books from Google Books API
+// Route to fetch books from Google Books API
 app.get('/books', (req, res) => {
 	const query = req.query.query || 'javascript'; // Use the user's search query or default to 'javascript'
 
@@ -29,6 +32,15 @@ app.get('/books', (req, res) => {
 	});
 
 })
+
+// Route to handle feedback
+app.post('/feedback', (req, res) => {
+	const { bookId, feedback } = req.body;
+	console.log(`Received feedback for book ID: ${bookId}, Feedback: ${feedback}`);
+
+	// Send a respone back
+	res.send(`Feedback received for book ID: ${bookId}, Feedback: ${feedback}`);
+});
 
 // Set the port number for the server
 const PORT = 5005;
