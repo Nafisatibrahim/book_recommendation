@@ -15,7 +15,7 @@ const API_KEY = process.env.BOOKS_API_KEY || 'AIzaSyDm74oNqKRuQZuwFZ0ctpi9cI5QLT
 
 // Example route to fetch books from Google Books API
 app.get('/books', (req, res) => {
-	const query = 'javascript'; // Define the search query
+	const query = req.query.query || 'javascript'; // Use the user's search query or default to 'javascript'
 
 	// Fetch data
 	axios.get(`https://www.googleapis.com/books/v1/volumes?q=${query}&key=${API_KEY}`)
@@ -24,7 +24,7 @@ app.get('/books', (req, res) => {
 		res.json(response.data);
 	})
 	.catch(error => {
-		console.error('Error fetchinng data from Google Books API:', error);
+		console.error('Error fetching data from Google Books API:', error);
 		res.status(500).send('Error fetching data');	
 	});
 
