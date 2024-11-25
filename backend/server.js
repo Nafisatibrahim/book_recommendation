@@ -46,6 +46,13 @@ app.post('/api/feedback', (req, res) => {
   res.send(`Feedback received for book ID: ${bookId}, Feedback: ${feedback}`);
 });
 
+// Simple route to confirm the backend is running
+app.get('/', (req, res) => {
+  res.send('Backend is running and ready to accept requests!');
+});
+
+
+/*
 // Serve the frontend in production
 if (process.env.NODE_ENV === 'production') {
   // Serve static files from the React frontend build directory
@@ -61,6 +68,7 @@ if (process.env.NODE_ENV === 'production') {
     res.send('Backend is running!');
   });
 }
+*/
 
 // Start the server and listen on the specific port
 app.listen(PORT, () => {
